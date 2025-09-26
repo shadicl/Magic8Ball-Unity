@@ -1,16 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class Magic8Ball : MonoBehaviour
 {
-    private string[] answers = {
+    private string[] goodAnswers = {
         "Yes",
-        "No",
-        "Ask again later",
         "Outlook good",
-        "Very doubtful"
+        "Most certainly",
+        "For sure",
+        "Definitely"
+    };
+
+     private string[] badAnswers = {
+        "No",
+        "Outlook bad",
+        "Less likely",
+        "Not a chance",
+        "Nope"
     };
 
     private Vector3 originalPosition;
@@ -18,12 +27,29 @@ public class Magic8Ball : MonoBehaviour
     public TMP_Text answerText;
     private bool debounce = true;
 
+    public Slider optimismBar;
+
     // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space) && debounce == true) {
             debounce = false;
             StartCoroutine(Shake(1f, 0.1f));
+        }
+    }
+
+    string GetRandomAnswer() {
+        
+        float optimism = optimismBar.value;
+        float roll = Random.Range(0f,1f);
+
+        if (roll <= optimism) { // positive
+            int index = Random.Range(0, goodAnswers.Length);
+            return goodAnswers[index];
+        }
+        else { // negative
+            int index = Random.Range(0, badAnswers.Length);
+            return badAnswers[index];
         }
     }
 
@@ -43,8 +69,8 @@ public class Magic8Ball : MonoBehaviour
 
         transform.localPosition = originalPosition;
 
-        int index = Random.Range(0, answers.Length);
-        answerText.text = answers[index];
+        string randomAnswer = GetRandomAnswer();
+        answerText.text = randomAnswer;
         debounce = true;
     }
 }
